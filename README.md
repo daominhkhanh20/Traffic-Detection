@@ -1,2 +1,2 @@
-- Link file weight for Yolo [link](https://drive.google.com/file/d/15j9V_wljys0QxXiV0qRvpSmeAbxX2YyZ/view?usp=sharing)
-- Link data for preprocessing data for train Yolo [link](https://drive.google.com/file/d/1bdsM29rfZYQKubXEnW65BReWj3XKs2XG/view?usp=sharing)
+- File weight for Yolo [link](https://drive.google.com/file/d/15j9V_wljys0QxXiV0qRvpSmeAbxX2YyZ/view?usp=sharing)
+- Data raw for train Yolo [link](https://drive.google.com/file/d/1bdsM29rfZYQKubXEnW65BReWj3XKs2XG/view?usp=sharing)
