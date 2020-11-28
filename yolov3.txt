@@ -1,0 +1,5 @@
+circular,white red
+others
+triangle,white red
+white black
+circular,blue 
