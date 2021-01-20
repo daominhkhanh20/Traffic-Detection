@@ -4,6 +4,8 @@ import time
 import argparse
 from AssignLabel import predict_name
 from PIL import Image
+import os
+import random
 
 #hand comand line for run python
 #when you run this file,you need must add 4 parameter: image,config,weight,classes
@@ -12,12 +14,12 @@ from PIL import Image
 
 ap = argparse.ArgumentParser()
 
-ap.add_argument('-c', '--config', required=True,
-                help = 'path to yolo config file')
-ap.add_argument('-w', '--weights', required=True,
-                help = 'path to yolo pre-trained weights')
-ap.add_argument('-cl', '--classes', required=True,
-                help = 'path to text file containing class names')
+# ap.add_argument('-c', '--config', required=True,
+#                 help = 'path to yolo config file')
+# ap.add_argument('-w', '--weights', required=True,
+#                 help = 'path to yolo pre-trained weights')
+# ap.add_argument('-cl', '--classes', required=True,
+#                 help = 'path to text file containing class names')
 
 #ap.add_argument('-s','--size',required=True,help='size model image for CNN')
 ap.add_argument('-v','--video',required=False)
@@ -29,21 +31,22 @@ classification=predict_name()
 
 #load model, file configure model,name all of the class(80 class),random color for each class
 def load_model():
-    net=cv2.dnn.readNet(args.weights, args.config)
+    net=cv2.dnn.readNet('Yolo/yolov3.weights', 'Yolo/yolov3.cfg')
     classes=None
-    with open(args.classes,'r')as f:
+    with open('Yolo/yolov3.txt','r')as f:
         classes=[line.strip() for line in f.readlines()]
 
     layer_names=net.getLayerNames()
     output_layers=[layer_names[i[0]-1]for i in net.getUnconnectedOutLayers()]
     colors=np.random.randint(0,255,size=(43,3)).astype(float)#color for draw objects
     return net,classes,colors,output_layers
+net,classes,colors,output_layers=load_model()
 
 def load_image():
     image=cv2.imread(args.image)
     height,width=image.shape[:2]
-    if height >=1000 or width>=1000:
-        image=cv2.resize(image,None,fx=0.5,fy=0.5)
+    # if height >=1000 or width>=1000:
+    #     image=cv2.resize(image,None,fx=0.5,fy=0.5)
 
     height,width=image.shape[:2]
     return image,height,width
@@ -101,7 +104,7 @@ def draw_labels(boxs,confidences,colors,classes,class_ids,image):
         Plsease keep this is mind
         '''
         z=5
-        image_crop=image[y-z:y+h+z,x:x-z+w+z]
+        image_crop=image[y-z:y+h+z,x-z:x+w+z]
         name,index=classification.predict(image_crop)
         color=colors[index]
         cv2.rectangle(image, (x-z,y-z), (x+w+z,y+h+z),color, 2)
@@ -111,9 +114,13 @@ def draw_labels(boxs,confidences,colors,classes,class_ids,image):
 
 
     cv2.imshow("Object detection",image)
+    # os.getcwd();
+    # os.chdir('Result')
+    # name_file="Result{}.jpg".format(max(indexs)[0]*random.randint(1,900))
+    # cv2.imwrite(name_file,image)
+    # os.chdir("..")
 
 def detect_object_image():
-    net,classes,colors,output_layers=load_model()
     image,height,width=load_image()
     outputs=detect_objects(image,net,output_layers)
     boxes,confidences,class_ids=get_boxs(outputs,height,width)
@@ -125,7 +132,6 @@ def detect_object_image():
             break
 
 def detect_object_video():
-    net,classes,colors,output_layers=load_model()
     cap=cv2.VideoCapture(args.video)
     i=0
     while True:
